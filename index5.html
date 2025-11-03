@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Class Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-database.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body { font-family:'Poppins',sans-serif; background:#eef3ff; text-align:center; padding:20px; }
+    canvas { max-width:600px; margin:auto; }
+    table { border-collapse:collapse; margin:auto; width:90%; background:white; border-radius:10px; overflow:hidden; }
+    th,td { border:1px solid #ddd; padding:8px; }
+    th { background:#2563eb; color:white; }
+  </style>
+</head>
+<body>
+  <h1>📊 Class Dashboard</h1>
+  <canvas id="chart"></canvas>
+  <h2>Complaints</h2>
+  <table id="complaintsTable"><tr><th>Teacher</th><th>Class</th><th>Complaint</th></tr></table>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-database.js";
+    const firebaseConfig = {
+      apiKey: "AIzaSyAmrwroeecIVIF1itF9MDPROquyXie-Rrc",
+     authDomain: "smart-classroom-3d35a.firebaseapp.com",
+     databaseURL: "https://smart-classroom-3d35a-default-rtdb.firebaseio.com",
+     projectId: "smart-classroom-3d35a",
+     storageBucket: "smart-classroom-3d35a.firebasestorage.app",
+     appId: "1:880063756991:web:be8946acca3d771711240a",
+     messagingSenderId: "880063756991",
+     measurementId: "G-1V9K25838R"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const className = urlParams.get('class') || '9A';
+
+    const chartCtx = document.getElementById("chart");
+    const chart = new Chart(chartCtx, {
+      type:"bar",
+      data:{ labels:[], datasets:[{label:`${className} Marks`, data:[], backgroundColor:"#2563eb"}]},
+      options:{ scales:{ y:{beginAtZero:true,max:100} } }
+    });
+
+    onValue(ref(db,`classes/${className}/students`),(snap)=>{
+      const names=[],marks=[];
+      snap.forEach(child=>{
+        names.push(child.val().name);
+        marks.push(child.val().marks);
+      });
+      chart.data.labels=names;
+      chart.data.datasets[0].data=marks;
+      chart.update();
+    });
+
+    onValue(ref(db,"complaints"),(snap)=>{
+      const table=document.getElementById("complaintsTable");
+      table.innerHTML="<tr><th>Teacher</th><th>Class</th><th>Complaint</th></tr>";
+      snap.forEach(child=>{
+        const {teacher,class:cls,complaint}=child.val();
+        const row=document.createElement("tr");
+        row.innerHTML=`<td>${teacher}</td><td>${cls}</td><td>${complaint}</td>`;
+        table.appendChild(row);
+      });
+    });
+  </script>
+</body>
+</html>

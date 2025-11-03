@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Teacher Panel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-database.js"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f0f4ff;
+      text-align: center;
+      padding: 30px;
+    }
+    h1 { color:#2563eb; }
+    form {
+      background:white;
+      max-width:400px;
+      margin:auto;
+      padding:20px;
+      border-radius:15px;
+      box-shadow:0 0 10px rgba(0,0,0,0.1);
+    }
+    input,textarea,button {
+      width:100%;
+      margin-top:10px;
+      padding:10px;
+      border-radius:10px;
+      border:1px solid #ccc;
+      font-size:16px;
+    }
+    button {
+      background:#2563eb;
+      color:white;
+      border:none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Teacher Dashboard</h1>
+
+  <form id="marksForm">
+    <h3>Enter Student Marks</h3>
+    <input id="className" placeholder="Class (e.g. 9A)" required>
+    <input id="studentName" placeholder="Student Name" required>
+    <input id="marks" placeholder="Marks %" required>
+    <button type="submit">Save Marks</button>
+  </form>
+
+  <form id="complaintForm">
+    <h3>Complaint Form</h3>
+    <input id="teacherName" placeholder="Teacher Name" required>
+    <input id="classC" placeholder="Class (e.g. 9A)" required>
+    <textarea id="complaintText" placeholder="Write complaint..." required></textarea>
+    <button type="submit">Submit Complaint</button>
+  </form>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
+    import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAmrwroeecIVIF1itF9MDPROquyXie-Rrc",
+      authDomain: "smart-classroom-3d35a.firebaseapp.com",
+      databaseURL: "https://smart-classroom-3d35a-default-rtdb.firebaseio.com",
+      projectId: "smart-classroom-3d35a",
+      storageBucket: "smart-classroom-3d35a.firebasestorage.app",
+      messagingSenderId: "880063756991",
+      appId: "1:880063756991:web:be8946acca3d771711240a"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    document.getElementById("marksForm").addEventListener("submit", e=>{
+      e.preventDefault();
+      const c = className.value.trim();
+      const s = studentName.value.trim();
+      const m = marks.value.trim();
+      set(push(ref(db,`classes/${c}/students`)), { name:s, marks:m });
+      alert("Marks saved");
+      e.target.reset();
+    });
+
+    document.getElementById("complaintForm").addEventListener("submit", e=>{
+      e.preventDefault();
+      const t = teacherName.value.trim();
+      const c = classC.value.trim();
+      const msg = complaintText.value.trim();
+      set(push(ref(db,`complaints`)), { teacher:t, class:c, complaint:msg });
+      alert("Complaint submitted");
+      e.target.reset();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Classroom Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg,#2563eb,#1e40af);
+      color: white;
+      text-align: center;
+      padding: 80px 20px;
+    }
+    .box {
+      background: white;
+      color: #333;
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 400px;
+      margin: auto;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    }
+    input,button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 15px;
+      border-radius: 10px;
+      border: none;
+      font-size: 16px;
+    }
+    button {
+      background: #2563eb;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #1e40af;
+    }
+  </style>
+</head>
+<body>
+  <h1>📚 Smart Classroom QR System</h1>
+  <p>Scan your class QR or enter classroom code</p>
+  <div class="box">
+    <input id="classCode" placeholder="e.g. 9A" />
+    <button onclick="goToClass()">Open Dashboard</button>
+  </div>
+  <script>
+    function goToClass(){
+      const code = document.getElementById('classCode').value.trim();
+      if(!code) return alert('Enter a classroom code');
+      window.location.href = `dashboard.html?class=${code}`;
+    }
+  </script>
+</body>
+</html>
